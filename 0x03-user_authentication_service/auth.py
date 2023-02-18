@@ -58,7 +58,6 @@ class Auth:
             return usr
         raise ValueError(f"User {email} already exists")
 
-
     def valid_login(self, email: str, password: str) -> bool:
         """
         Validate a user's login credentials and return True if they are correct
@@ -78,7 +77,6 @@ class Auth:
         passwd = password.encode("utf-8")
         return bcrypt.checkpw(passwd, user_password)
 
-
     def create_session(self, email: str) -> Union[None, str]:
         """
         Create a session_id for an existing user and update the user's
@@ -94,7 +92,6 @@ class Auth:
         session_id = _generate_uuid()
         self._db.update_user(user.id, session_id=session_id)
         return session_id
-
 
     def get_user_from_session_id(self, session_id: str) -> Union[None, U]:
         """
@@ -115,7 +112,6 @@ class Auth:
 
         return user
 
-
     def destroy_session(self, user_id: int) -> None:
         """
         Take a user_id and destroy that user's session and update their
@@ -130,3 +126,20 @@ class Auth:
         except ValueError:
             return None
         return None
+
+    def get_reset_password_token(self, email: str) -> str:
+        """
+        Generates a reset_token uuid for a user identified by the given email
+        Args:
+            email (str): user's email address
+        Return:
+            newly generated reset_token for the relevant user
+        """
+        try:
+            user = self._db.find_user_by(email=email)
+        except NoResultFound:
+            raise ValueError
+
+        reset_token = _generate_uuid()
+        self._db.update_user(user.id, reset_token=reset_token)
+        return reset_token
