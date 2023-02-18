@@ -79,7 +79,7 @@ class Auth:
         return bcrypt.checkpw(passwd, user_password)
 
 
-def create_session(self, email: str) -> Union[None, str]:
+    def create_session(self, email: str) -> Union[None, str]:
         """
         Create a session_id for an existing user and update the user's
         session_id attribute
@@ -96,7 +96,7 @@ def create_session(self, email: str) -> Union[None, str]:
         return session_id
 
 
-def get_user_from_session_id(self, session_id: str) -> Union[None, U]:
+    def get_user_from_session_id(self, session_id: str) -> Union[None, U]:
         """
         Takes a session_id and returns the corresponding user, if one exists,
         else returns None
@@ -114,3 +114,19 @@ def get_user_from_session_id(self, session_id: str) -> Union[None, U]:
             return None
 
         return user
+
+
+    def destroy_session(self, user_id: int) -> None:
+        """
+        Take a user_id and destroy that user's session and update their
+        session_id attribute to None
+        Args:
+            user_id (int): user's id
+        Return:
+            None
+        """
+        try:
+            self._db.update_user(user_id, session_id=None)
+        except ValueError:
+            return None
+        return None
